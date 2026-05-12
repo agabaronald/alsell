@@ -1,31 +1,30 @@
 const router = require('express').Router();
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 const auth = require('../middleware/auth');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, unique + path.extname(file.originalname));
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'alsel',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 1000, height: 1000, crop: 'limit', quality: 'auto' }],
   },
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|webp/;
-    const ok = allowed.test(path.extname(file.originalname).toLowerCase()) && allowed.test(file.mimetype);
-    ok ? cb(null, true) : cb(new Error('Images only'));
-  },
-});
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
-// Upload up to 10 images
 router.post('/', auth, upload.array('images', 10), (req, res) => {
   if (!req.files || req.files.length === 0)
     return res.status(400).json({ error: 'No files uploaded' });
-  const urls = req.files.map(f => `http://localhost:3000/uploads/${f.filename}`);
+  const urls = req.files.map(f => f.path);
   res.json({ urls });
 });
 
