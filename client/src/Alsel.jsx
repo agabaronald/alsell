@@ -11,8 +11,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-const API = "http://localhost:3000/api";
-const SOCKET_URL = "http://localhost:3000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
 
 const G = {
   gold: "#C9A84C",
