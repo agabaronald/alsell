@@ -95,7 +95,7 @@ const endExpiredAuctions = require('./jobs/endAuctions');
 app.use('/api/bundles', require('./routes/bundles'));
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Alsel API running — Phase 3' });
+  res.json({ status: 'ok', message: 'Alsel API running — Phase 4' });
 });
 
 // ── Socket.io ──────────────────────────────────────────────────
