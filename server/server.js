@@ -93,6 +93,7 @@ app.use('/api/ai', require('./routes/ai'));
 app.use('/api/auctions', require('./routes/auctions'));
 const endExpiredAuctions = require('./jobs/endAuctions');
 app.use('/api/bundles', require('./routes/bundles'));
+app.use('/api/boosts', require('./routes/boosts'));
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Alsel API running — Phase 4' });
@@ -125,4 +126,12 @@ server.listen(PORT, () => {
   console.log(`Alsel server running on port ${PORT} — Phase 4`);
   setInterval(endExpiredAuctions, 60 * 1000);
   endExpiredAuctions();
+  // Cleanup expired boosts every 5 minutes
+  setInterval(async () => {
+    try {
+      await fetch(`http://localhost:${PORT}/api/boosts/cleanup`, { method: 'POST' });
+    } catch (err) {
+      console.error('Boost cleanup error:', err.message);
+    }
+  }, 5 * 60 * 1000);
 });
