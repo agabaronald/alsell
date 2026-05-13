@@ -92,6 +92,7 @@ app.use('/api/reports', require('./routes/reports'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/auctions', require('./routes/auctions'));
 const endExpiredAuctions = require('./jobs/endAuctions');
+const checkPriceDrops = require('./jobs/checkPriceDrops');
 app.use('/api/bundles', require('./routes/bundles'));
 app.use('/api/boosts', require('./routes/boosts'));
 // Health check
@@ -134,4 +135,7 @@ server.listen(PORT, () => {
       console.error('Boost cleanup error:', err.message);
     }
   }, 5 * 60 * 1000);
+  // Check price drops every hour
+  setInterval(checkPriceDrops, 60 * 60 * 1000);
+  checkPriceDrops();
 });

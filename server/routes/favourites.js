@@ -6,15 +6,10 @@ const auth = require('../middleware/auth');
 router.get('/', auth, async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT l.*, u.username as seller,
-              a.id as auction_id, a.current_price as auction_current_price,
-              a.starting_price as auction_starting_price, a.ends_at as auction_ends_at,
-              a.status as auction_status,
-              (SELECT COUNT(*) FROM bids b WHERE b.auction_id=a.id) as bid_count
+      `SELECT l.*, u.username as seller, f.price_at_save
        FROM favourites f
        LEFT JOIN listings l ON f.listing_id = l.id
        LEFT JOIN users u ON l.user_id = u.id
-       LEFT JOIN auctions a ON l.id = a.listing_id
        WHERE f.user_id=$1
        ORDER BY f.created_at DESC`,
       [req.user.id]
@@ -30,9 +25,13 @@ router.post('/', auth, async (req, res) => {
   const { listing_id } = req.body;
   if (!listing_id) return res.status(400).json({ error: 'listing_id required' });
   try {
+    const listing = await db.query('SELECT price FROM listings WHERE id=$1', [listing_id]);
+    if (!listing.rows.length) return res.status(404).json({ error: 'Listing not found' });
+    const price_at_save = listing.rows[0].price;
     await db.query(
-      `INSERT INTO favourites (user_id, listing_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-      [req.user.id, listing_id]
+      `INSERT INTO favourites (user_id, listing_id, price_at_save)
+       VALUES ($1,$2,$3) ON CONFLICT DO NOTHING`,
+      [req.user.id, listing_id, price_at_save]
     );
     res.status(201).json({ message: 'Added to favourites' });
   } catch (err) {
