@@ -4122,7 +4122,10 @@ function SellModal({ darkMode, onClose, onPost }) {
 
 // ── Main App ───────────────────────────────────────────────────
 export default function Alsel() {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('alsel_darkmode');
+    return saved !== null ? saved === 'true' : true;
+  });
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState("newest");
   const [condition, setCondition] = useState("All");
@@ -4235,6 +4238,10 @@ export default function Alsel() {
         if (Array.isArray(data)) setFavs(data.map((f) => f.id));
       });
   }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem('alsel_darkmode', darkMode);
+  }, [darkMode]);
 
   const toggleFav = async (id) => {
     if (!user) {
