@@ -14,10 +14,38 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: process.env.CLIENT_URL, methods: ['GET', 'POST'], credentials: true },
+  cors: {
+    origin: (origin, callback) => {
+      const allowed = [
+        process.env.CLIENT_URL,
+        process.env.DASHBOARD_URL,
+        'http://localhost:5173',
+        'http://localhost:5174',
+      ].filter(Boolean);
+      if (!origin || allowed.includes(origin)) callback(null, true);
+      else callback(new Error(`CORS blocked: ${origin}`));
+    },
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
 });
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = [
+      process.env.CLIENT_URL,
+      process.env.DASHBOARD_URL,
+      'http://localhost:5173',
+      'http://localhost:5174',
+    ].filter(Boolean);
+    if (!origin || allowed.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
