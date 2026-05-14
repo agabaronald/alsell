@@ -166,5 +166,19 @@ router.get('/locations', auth, isSuperAdmin, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+// Admin audit log
+router.get('/log', auth, isSuperAdmin, async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT al.*, u.username as admin_name
+       FROM admin_log al
+       LEFT JOIN users u ON al.admin_id=u.id
+       ORDER BY al.created_at DESC
+       LIMIT 100`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;

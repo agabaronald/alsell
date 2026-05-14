@@ -101,6 +101,7 @@ app.use('/api/admin/listings', require('./routes/admin-listings'));
 app.use('/api/admin/reports', require('./routes/admin-reports'));
 app.use('/api/seller', require('./routes/seller-dashboard'));
 app.use('/api/buyer', require('./routes/buyer-dashboard'));
+app.use('/api/admin/log', require('./routes/admin-analytics'));
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Alsel API running — Phase 4' });
