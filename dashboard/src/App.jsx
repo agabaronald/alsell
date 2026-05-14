@@ -31,7 +31,15 @@ export default function App() {
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
         <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-          <Route index element={<Navigate to="/overview" replace />} />
+          <Route index element={
+            (() => {
+              const { user } = useAuthStore();
+              const adminRoles = ['superadmin', 'moderator', 'staff'];
+              return adminRoles.includes(user?.role)
+                ? <Navigate to="/overview" replace />
+                : <Navigate to="/seller" replace />;
+            })()
+          } />
           <Route path="overview" element={<ProtectedRoute requireAdmin><Overview /></ProtectedRoute>} />
           <Route path="users" element={<ProtectedRoute requireAdmin><Users /></ProtectedRoute>} />
           <Route path="users/:id" element={<ProtectedRoute requireAdmin><UserDetail /></ProtectedRoute>} />
@@ -40,8 +48,8 @@ export default function App() {
           <Route path="log" element={<ProtectedRoute requireAdmin><AdminLog /></ProtectedRoute>} />
           <Route path="seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
           <Route path="buyer" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
