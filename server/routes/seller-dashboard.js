@@ -112,6 +112,9 @@ router.get('/offers', auth, async (req, res) => {
     let where = ['l.user_id=$1'];
     const params = [req.user.id];
     if (status) { params.push(status); where.push(`o.status=$${params.length}`); }
+    const countResult = await db.query(
+      `SELECT COUNT(*) FROM offers o LEFT JOIN listings l ON o.listing_id=l.id WHERE ${where.join(' AND ')}`, params
+    );
     params.push(limit, offset);
     const result = await db.query(`
       SELECT o.*, l.title as listing_title, l.price as listing_price,
@@ -124,7 +127,12 @@ router.get('/offers', auth, async (req, res) => {
       ORDER BY o.created_at DESC
       LIMIT $${params.length-1} OFFSET $${params.length}
     `, params);
-    res.json(result.rows);
+    res.json({
+      offers: result.rows,
+      total: Number(countResult.rows[0].count),
+      page: Number(page),
+      pages: Math.ceil(Number(countResult.rows[0].count) / limit),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -132,7 +140,12 @@ router.get('/offers', auth, async (req, res) => {
 
 // Seller's reviews
 router.get('/reviews', auth, async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
   try {
+    const countResult = await db.query(
+      'SELECT COUNT(*) FROM reviews WHERE seller_id=$1', [req.user.id]
+    );
     const result = await db.query(`
       SELECT r.*, u.username as reviewer_name, l.title as listing_title
       FROM reviews r
@@ -140,8 +153,14 @@ router.get('/reviews', auth, async (req, res) => {
       LEFT JOIN listings l ON r.listing_id=l.id
       WHERE r.seller_id=$1
       ORDER BY r.created_at DESC
-    `, [req.user.id]);
-    res.json(result.rows);
+      LIMIT $2 OFFSET $3
+    `, [req.user.id, limit, offset]);
+    res.json({
+      reviews: result.rows,
+      total: Number(countResult.rows[0].count),
+      page: Number(page),
+      pages: Math.ceil(Number(countResult.rows[0].count) / limit),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

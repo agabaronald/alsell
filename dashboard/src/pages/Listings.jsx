@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Search, Trash2, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import api from '../lib/api';
+import Pagination from '../components/Pagination';
 import toast from 'react-hot-toast';
 
 export default function Listings() {
@@ -133,15 +134,7 @@ export default function Listings() {
             </tbody>
           </table>
         </div>
-        {data.pages > 1 && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderTop: '1px solid var(--border)' }}>
-            <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Page {filters.page} of {data.pages}</span>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button disabled={filters.page === 1} onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))} style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '5px 12px', fontSize: 12, color: 'var(--text-primary)', cursor: filters.page === 1 ? 'not-allowed' : 'pointer', opacity: filters.page === 1 ? 0.5 : 1 }}>← Prev</button>
-              <button disabled={filters.page === data.pages} onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))} style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '5px 12px', fontSize: 12, color: 'var(--text-primary)', cursor: filters.page === data.pages ? 'not-allowed' : 'pointer', opacity: filters.page === data.pages ? 0.5 : 1 }}>Next →</button>
-            </div>
-          </div>
-        )}
+        <Pagination page={filters.page} pages={data.pages} onPageChange={p => setFilters(f => ({ ...f, page: p }))} />
       </div>
     </div>
   );

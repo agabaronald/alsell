@@ -3,22 +3,29 @@ import { format } from 'date-fns';
 import { CheckCircle, XCircle, ArrowUp } from 'lucide-react';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
+import Pagination from '../components/Pagination';
 
 export default function Reports() {
-  const [data, setData] = useState({ reports: [], total: 0 });
+  const [data, setData] = useState({ reports: [], total: 0, pages: 1 });
   const [status, setStatus] = useState('pending');
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/admin/reports?status=${status}`);
+      const res = await api.get(`/admin/reports?status=${status}&page=${page}`);
       setData(res);
     } catch { toast.error('Failed to load reports'); }
     finally { setLoading(false); }
-  }, [status]);
+  }, [status, page]);
 
   useEffect(() => { load(); }, [load]);
+
+  const handleStatusChange = (s) => {
+    setStatus(s);
+    setPage(1);
+  };
 
   const resolve = async (id, action) => {
     const note = action === 'actioned' ? prompt('Action taken:') : '';
@@ -38,7 +45,7 @@ export default function Reports() {
 
       <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
         {['pending', 'actioned', 'dismissed', 'escalated'].map(s => (
-          <button key={s} onClick={() => setStatus(s)}
+          <button key={s} onClick={() => handleStatusChange(s)}
             style={{ padding: '7px 16px', borderRadius: 8, border: `1px solid ${status === s ? 'var(--gold-border)' : 'var(--border)'}`, background: status === s ? 'var(--gold-dim)' : 'transparent', color: status === s ? 'var(--gold)' : 'var(--text-muted)', fontSize: 12, fontWeight: status === s ? 600 : 400, cursor: 'pointer', textTransform: 'capitalize' }}>
             {s}
           </button>

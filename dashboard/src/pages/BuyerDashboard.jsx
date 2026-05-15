@@ -3,24 +3,31 @@ import { ShoppingBag, Heart, Gavel, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import api from '../lib/api';
 import StatCard from '../components/StatCard';
+import Pagination from '../components/Pagination';
 import toast from 'react-hot-toast';
 
 export default function BuyerDashboard() {
   const [overview, setOverview] = useState(null);
   const [offers, setOffers] = useState([]);
+  const [offerPages, setOfferPages] = useState(1);
   const [bids, setBids] = useState([]);
+  const [bidPages, setBidPages] = useState(1);
   const [favourites, setFavourites] = useState([]);
+  const [favPages, setFavPages] = useState(1);
   const [activeTab, setActiveTab] = useState('offers');
   const [loading, setLoading] = useState(true);
+  const [offerPage, setOfferPage] = useState(1);
+  const [bidPage, setBidPage] = useState(1);
+  const [favPage, setFavPage] = useState(1);
 
   useEffect(() => {
     const load = async () => {
       try {
         const results = await Promise.allSettled([
           api.get('/buyer/overview'),
-          api.get('/buyer/offers'),
-          api.get('/buyer/bids'),
-          api.get('/buyer/favourites'),
+          api.get(`/buyer/offers?page=${offerPage}`),
+          api.get(`/buyer/bids?page=${bidPage}`),
+          api.get(`/buyer/favourites?page=${favPage}`),
         ]);
 
         const [ov, of, bd, fv] = results;
@@ -28,13 +35,13 @@ export default function BuyerDashboard() {
         if (ov.status === 'fulfilled') setOverview(ov.value);
         else console.error('Overview failed:', ov.reason);
 
-        if (of.status === 'fulfilled') setOffers(of.value);
+        if (of.status === 'fulfilled') { setOffers(of.value.offers || []); setOfferPages(of.value.pages || 1); }
         else console.error('Offers failed:', of.reason);
 
-        if (bd.status === 'fulfilled') setBids(bd.value);
+        if (bd.status === 'fulfilled') { setBids(bd.value.bids || []); setBidPages(bd.value.pages || 1); }
         else console.error('Bids failed:', bd.reason);
 
-        if (fv.status === 'fulfilled') setFavourites(fv.value);
+        if (fv.status === 'fulfilled') { setFavourites(fv.value.favourites || []); setFavPages(fv.value.pages || 1); }
         else console.error('Favourites failed:', fv.reason);
 
       } catch (err) {
@@ -45,7 +52,7 @@ export default function BuyerDashboard() {
       }
     };
     load();
-  }, []);
+  }, [offerPage, bidPage, favPage]);
 
   if (loading) return <div style={{ padding: 32, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>Loading...</div>;
 
@@ -65,7 +72,7 @@ export default function BuyerDashboard() {
 
       <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
         {['offers', 'bids', 'favourites'].map(t => (
-          <button key={t} onClick={() => setActiveTab(t)}
+          <button key={t} onClick={() => { setActiveTab(t); setOfferPage(1); setBidPage(1); setFavPage(1); }}
             style={{ padding: '7px 16px', borderRadius: 8, border: `1px solid ${activeTab === t ? 'var(--gold-border)' : 'var(--border)'}`, background: activeTab === t ? 'var(--gold-dim)' : 'transparent', color: activeTab === t ? 'var(--gold)' : 'var(--text-muted)', fontSize: 12, fontWeight: activeTab === t ? 600 : 400, cursor: 'pointer', textTransform: 'capitalize' }}>
             {t}
           </button>
@@ -88,6 +95,7 @@ export default function BuyerDashboard() {
             </div>
           ))
         )}
+        {activeTab === 'offers' && <Pagination page={offerPage} pages={offerPages} onPageChange={setOfferPage} />}
         {activeTab === 'bids' && (
           bids.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>No bids placed yet</div>
@@ -106,6 +114,7 @@ export default function BuyerDashboard() {
             </div>
           ))
         )}
+        {activeTab === 'bids' && <Pagination page={bidPage} pages={bidPages} onPageChange={setBidPage} />}
         {activeTab === 'favourites' && (
           favourites.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>No saved listings</div>
@@ -127,6 +136,7 @@ export default function BuyerDashboard() {
             </div>
           ))
         )}
+        {activeTab === 'favourites' && <Pagination page={favPage} pages={favPages} onPageChange={setFavPage} />}
       </div>
     </div>
   );

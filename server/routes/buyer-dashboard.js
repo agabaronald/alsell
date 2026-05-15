@@ -47,11 +47,16 @@ router.get('/overview', auth, async (req, res) => {
 
 // Buyer's offers
 router.get('/offers', auth, async (req, res) => {
-  const { status } = req.query;
+  const { status, page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
   try {
     let where = ['o.buyer_id=$1'];
     const params = [req.user.id];
     if (status) { params.push(status); where.push(`o.status=$${params.length}`); }
+    const countResult = await db.query(
+      `SELECT COUNT(*) FROM offers o WHERE ${where.join(' AND ')}`, params
+    );
+    params.push(limit, offset);
     const result = await db.query(`
       SELECT o.*, l.title as listing_title, l.price as listing_price,
         l.photos as listing_photos, l.category, l.location,
@@ -61,8 +66,14 @@ router.get('/offers', auth, async (req, res) => {
       LEFT JOIN users u ON l.user_id=u.id
       WHERE ${where.join(' AND ')}
       ORDER BY o.created_at DESC
+      LIMIT $${params.length-1} OFFSET $${params.length}
     `, params);
-    res.json(result.rows);
+    res.json({
+      offers: result.rows,
+      total: Number(countResult.rows[0].count),
+      page: Number(page),
+      pages: Math.ceil(Number(countResult.rows[0].count) / limit),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -70,7 +81,12 @@ router.get('/offers', auth, async (req, res) => {
 
 // Buyer's bid history
 router.get('/bids', auth, async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
   try {
+    const countResult = await db.query(
+      'SELECT COUNT(*) FROM bids WHERE bidder_id=$1', [req.user.id]
+    );
     const result = await db.query(`
       SELECT b.*, a.current_price, a.ends_at, a.status as auction_status,
         a.winner_id, l.title as listing_title, l.photos as listing_photos,
@@ -81,8 +97,14 @@ router.get('/bids', auth, async (req, res) => {
       LEFT JOIN listings l ON a.listing_id=l.id
       WHERE b.bidder_id=$1
       ORDER BY b.created_at DESC
-    `, [req.user.id]);
-    res.json(result.rows);
+      LIMIT $2 OFFSET $3
+    `, [req.user.id, limit, offset]);
+    res.json({
+      bids: result.rows,
+      total: Number(countResult.rows[0].count),
+      page: Number(page),
+      pages: Math.ceil(Number(countResult.rows[0].count) / limit),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -90,7 +112,12 @@ router.get('/bids', auth, async (req, res) => {
 
 // Buyer's favourites with price drop info
 router.get('/favourites', auth, async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
   try {
+    const countResult = await db.query(
+      'SELECT COUNT(*) FROM favourites WHERE user_id=$1', [req.user.id]
+    );
     const result = await db.query(`
       SELECT l.*, u.username as seller, f.price_at_save, f.created_at as saved_at,
         CASE WHEN l.price < f.price_at_save THEN true ELSE false END as price_dropped,
@@ -102,8 +129,14 @@ router.get('/favourites', auth, async (req, res) => {
       LEFT JOIN users u ON l.user_id=u.id
       WHERE f.user_id=$1
       ORDER BY price_dropped DESC, f.created_at DESC
-    `, [req.user.id]);
-    res.json(result.rows);
+      LIMIT $2 OFFSET $3
+    `, [req.user.id, limit, offset]);
+    res.json({
+      favourites: result.rows,
+      total: Number(countResult.rows[0].count),
+      page: Number(page),
+      pages: Math.ceil(Number(countResult.rows[0].count) / limit),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -2,17 +2,24 @@ import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
+import Pagination from '../components/Pagination';
 
 export default function AdminLog() {
   const [logs, setLogs] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/admin/analytics/log')
-      .then(data => setLogs(Array.isArray(data) ? data : []))
+    setLoading(true);
+    api.get(`/admin/analytics/log?page=${page}`)
+      .then(data => {
+        setLogs(Array.isArray(data.log) ? data.log : []);
+        setPages(data.pages || 1);
+      })
       .catch(() => toast.error('Failed to load log'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [page]);
 
   const actionColor = (action) => {
     if (action.includes('ban')) return 'var(--red)';
@@ -50,6 +57,7 @@ export default function AdminLog() {
           </div>
         ))}
       </div>
+      <Pagination page={page} pages={pages} onPageChange={setPage} />
     </div>
   );
 }

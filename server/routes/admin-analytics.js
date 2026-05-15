@@ -168,15 +168,24 @@ router.get('/locations', auth, isSuperAdmin, async (req, res) => {
 });
 // Admin audit log
 router.get('/log', auth, isSuperAdmin, async (req, res) => {
+  const { page = 1, limit = 20 } = req.query;
+  const offset = (page - 1) * limit;
   try {
+    const countResult = await db.query('SELECT COUNT(*) FROM admin_log');
     const result = await db.query(
       `SELECT al.*, u.username as admin_name
        FROM admin_log al
        LEFT JOIN users u ON al.admin_id=u.id
        ORDER BY al.created_at DESC
-       LIMIT 100`
+       LIMIT $1 OFFSET $2`,
+      [limit, offset]
     );
-    res.json(result.rows);
+    res.json({
+      log: result.rows,
+      total: Number(countResult.rows[0].count),
+      page: Number(page),
+      pages: Math.ceil(Number(countResult.rows[0].count) / limit),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

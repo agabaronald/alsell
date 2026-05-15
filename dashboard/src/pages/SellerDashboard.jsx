@@ -4,25 +4,32 @@ import { Package, TrendingUp, Star, Zap } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import api from '../lib/api';
 import StatCard from '../components/StatCard';
+import Pagination from '../components/Pagination';
 import toast from 'react-hot-toast';
 
 export default function SellerDashboard() {
   const [overview, setOverview] = useState(null);
   const [listings, setListings] = useState([]);
+  const [listingPages, setListingPages] = useState(1);
   const [offers, setOffers] = useState([]);
+  const [offerPages, setOfferPages] = useState(1);
   const [reviews, setReviews] = useState([]);
+  const [reviewPages, setReviewPages] = useState(1);
   const [activity, setActivity] = useState({ listings: [], offers: [] });
   const [loading, setLoading] = useState(true);
   const [listingFilter, setListingFilter] = useState('');
+  const [listingPage, setListingPage] = useState(1);
+  const [offerPage, setOfferPage] = useState(1);
+  const [reviewPage, setReviewPage] = useState(1);
 
   useEffect(() => {
     const load = async () => {
       try {
         const results = await Promise.allSettled([
           api.get('/seller/overview'),
-          api.get('/seller/listings'),
-          api.get('/seller/offers'),
-          api.get('/seller/reviews'),
+          api.get(`/seller/listings?page=${listingPage}`),
+          api.get(`/seller/offers?page=${offerPage}`),
+          api.get(`/seller/reviews?page=${reviewPage}`),
           api.get('/seller/activity'),
         ]);
 
@@ -31,13 +38,13 @@ export default function SellerDashboard() {
         if (ov.status === 'fulfilled') setOverview(ov.value);
         else console.error('Overview failed:', ov.reason);
 
-        if (ls.status === 'fulfilled') setListings(ls.value.listings || []);
+        if (ls.status === 'fulfilled') { setListings(ls.value.listings || []); setListingPages(ls.value.pages || 1); }
         else console.error('Listings failed:', ls.reason);
 
-        if (of.status === 'fulfilled') setOffers(of.value);
+        if (of.status === 'fulfilled') { setOffers(of.value.offers || []); setOfferPages(of.value.pages || 1); }
         else console.error('Offers failed:', of.reason);
 
-        if (rv.status === 'fulfilled') setReviews(rv.value);
+        if (rv.status === 'fulfilled') { setReviews(rv.value.reviews || []); setReviewPages(rv.value.pages || 1); }
         else console.error('Reviews failed:', rv.reason);
 
         if (ac.status === 'fulfilled') {
@@ -61,7 +68,7 @@ export default function SellerDashboard() {
       }
     };
     load();
-  }, []);
+  }, [listingPage, offerPage, reviewPage]);
 
   const handleStatusChange = async (listingId, status) => {
     try {
@@ -166,35 +173,37 @@ export default function SellerDashboard() {
                 </div>
               </div>
             ))}
+            </div>
+            <Pagination page={listingPage} pages={listingPages} onPageChange={setListingPage} />
           </div>
-        </div>
 
-        {/* Incoming offers */}
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Incoming offers</div>
-          </div>
-          <div style={{ maxHeight: 340, overflowY: 'auto' }}>
-            {offers.length === 0 ? (
-              <div style={{ padding: 30, textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>No offers yet</div>
-            ) : offers.map(o => (
-              <div key={o.id} style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', flex: 1, paddingRight: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{o.listing_title}</div>
-                  <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 20, background: o.status === 'accepted' ? 'var(--green-dim)' : o.status === 'declined' ? 'var(--red-dim)' : 'var(--gold-dim)', color: o.status === 'accepted' ? 'var(--green)' : o.status === 'declined' ? 'var(--red)' : 'var(--gold)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{o.status}</span>
-                </div>
-                <div style={{ fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--gold)', marginBottom: 4 }}>UGX {Number(o.amount).toLocaleString()}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>from {o.buyer_name} · {o.buyer_rating ? `★ ${Number(o.buyer_rating).toFixed(1)}` : 'No rating'}</div>
-                {o.status === 'pending' && (
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button onClick={() => handleOfferAction(o.id, 'accept')} style={{ flex: 1, background: 'var(--green-dim)', border: 'none', borderRadius: 6, padding: '6px', fontSize: 11, color: 'var(--green)', cursor: 'pointer', fontWeight: 600 }}>Accept</button>
-                    <button onClick={() => handleOfferAction(o.id, 'decline')} style={{ flex: 1, background: 'var(--red-dim)', border: 'none', borderRadius: 6, padding: '6px', fontSize: 11, color: 'var(--red)', cursor: 'pointer', fontWeight: 600 }}>Decline</button>
+          {/* Incoming offers */}
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Incoming offers</div>
+            </div>
+            <div style={{ maxHeight: 340, overflowY: 'auto' }}>
+              {offers.length === 0 ? (
+                <div style={{ padding: 30, textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>No offers yet</div>
+              ) : offers.map(o => (
+                <div key={o.id} style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', flex: 1, paddingRight: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{o.listing_title}</div>
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 20, background: o.status === 'accepted' ? 'var(--green-dim)' : o.status === 'declined' ? 'var(--red-dim)' : 'var(--gold-dim)', color: o.status === 'accepted' ? 'var(--green)' : o.status === 'declined' ? 'var(--red)' : 'var(--gold)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{o.status}</span>
                   </div>
-                )}
-              </div>
-            ))}
+                  <div style={{ fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--gold)', marginBottom: 4 }}>UGX {Number(o.amount).toLocaleString()}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>from {o.buyer_name} · {o.buyer_rating ? `★ ${Number(o.buyer_rating).toFixed(1)}` : 'No rating'}</div>
+                  {o.status === 'pending' && (
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={() => handleOfferAction(o.id, 'accept')} style={{ flex: 1, background: 'var(--green-dim)', border: 'none', borderRadius: 6, padding: '6px', fontSize: 11, color: 'var(--green)', cursor: 'pointer', fontWeight: 600 }}>Accept</button>
+                      <button onClick={() => handleOfferAction(o.id, 'decline')} style={{ flex: 1, background: 'var(--red-dim)', border: 'none', borderRadius: 6, padding: '6px', fontSize: 11, color: 'var(--red)', cursor: 'pointer', fontWeight: 600 }}>Decline</button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <Pagination page={offerPage} pages={offerPages} onPageChange={setOfferPage} />
           </div>
-        </div>
       </div>
 
       {/* Reviews */}
@@ -219,6 +228,7 @@ export default function SellerDashboard() {
           </div>
         )}
       </div>
+      <Pagination page={reviewPage} pages={reviewPages} onPageChange={setReviewPage} />
     </div>
   );
 }
