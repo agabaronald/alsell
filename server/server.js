@@ -129,7 +129,6 @@ app.use('/api/admin/listings', require('./routes/admin-listings'));
 app.use('/api/admin/reports', require('./routes/admin-reports'));
 app.use('/api/seller', require('./routes/seller-dashboard'));
 app.use('/api/buyer', require('./routes/buyer-dashboard'));
-app.use('/api/admin/log', require('./routes/admin-analytics'));
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Alsel API running — Phase 4' });
@@ -163,13 +162,10 @@ server.listen(PORT, () => {
   setInterval(endExpiredAuctions, 60 * 1000);
   endExpiredAuctions();
   // Cleanup expired boosts every 5 minutes
-  setInterval(async () => {
-    try {
-      await fetch(`http://localhost:${PORT}/api/boosts/cleanup`, { method: 'POST' });
-    } catch (err) {
-      console.error('Boost cleanup error:', err.message);
-    }
-  }, 5 * 60 * 1000);
+  const { cleanupExpiredBoosts } = require('./routes/boosts');
+  const runBoostCleanup = () => cleanupExpiredBoosts().catch(err => console.error('Boost cleanup error:', err.message));
+  setInterval(runBoostCleanup, 5 * 60 * 1000);
+  runBoostCleanup();
   // Check price drops every hour
   setInterval(checkPriceDrops, 60 * 60 * 1000);
   checkPriceDrops();

@@ -8,15 +8,7 @@ export default function AdminLog() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/admin/users?sort=newest&limit=1')
-      .then(() => api.get('/admin/analytics/overview'))
-      .catch(() => {});
-
-    // Fetch admin log directly
-    fetch(`${import.meta.env.VITE_API_URL}/admin/log`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('alsel_dashboard_token')}` }
-    })
-      .then(r => r.json())
+    api.get('/admin/analytics/log')
       .then(data => setLogs(Array.isArray(data) ? data : []))
       .catch(() => toast.error('Failed to load log'))
       .finally(() => setLoading(false));

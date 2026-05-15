@@ -43,9 +43,9 @@ router.get('/', async (req, res) => {
         )
       ) < $${params.length}`;
     }
-    if (sort === 'price-low') query += ' ORDER BY l.is_boosted DESC, l.price ASC';
-    else if (sort === 'price-high') query += ' ORDER BY l.is_boosted DESC, l.price DESC';
-    else query += ' ORDER BY l.is_boosted DESC, l.created_at DESC';
+    if (sort === 'price-low') query += ' ORDER BY l.is_boosted DESC NULLS LAST, l.price ASC';
+    else if (sort === 'price-high') query += ' ORDER BY l.is_boosted DESC NULLS LAST, l.price DESC';
+    else query += ' ORDER BY l.is_boosted DESC NULLS LAST, l.created_at DESC';
 
     const result = await db.query(query, params);
     res.json(result.rows);

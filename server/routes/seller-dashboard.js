@@ -71,7 +71,6 @@ router.get('/listings', auth, async (req, res) => {
     let orderBy = 'l.created_at DESC';
     if (sort === 'most-offers') orderBy = 'offer_count DESC';
     if (sort === 'highest-price') orderBy = 'l.price DESC';
-    if (sort === 'most-views') orderBy = 'l.price DESC';
 
     params.push(limit, offset);
     const result = await db.query(`

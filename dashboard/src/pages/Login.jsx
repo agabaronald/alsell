@@ -15,8 +15,7 @@ export default function Login() {
     setLoading(true);
     try {
       const data = await api.post('/auth/login', form);
-      const allowedRoles = ['superadmin', 'moderator', 'staff', 'user'];
-      if (!allowedRoles.includes(data.user.role) && data.user.role === 'banned') {
+      if (data.user.role === 'banned') {
         toast.error('Account suspended');
         return;
       }

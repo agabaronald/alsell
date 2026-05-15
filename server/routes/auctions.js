@@ -111,6 +111,13 @@ router.patch('/:auction_id/end', auth, async (req, res) => {
     if (!auction.rows.length) return res.status(404).json({ error: 'Not found' });
     const a = auction.rows[0];
 
+    // Verify ownership or admin
+    const listing = await db.query('SELECT user_id FROM listings WHERE id=$1', [a.listing_id]);
+    if (!listing.rows.length) return res.status(404).json({ error: 'Listing not found' });
+    if (listing.rows[0].user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not your listing' });
+    }
+
     const topBid = await db.query(
       'SELECT * FROM bids WHERE auction_id=$1 ORDER BY amount DESC LIMIT 1',
       [a.id]

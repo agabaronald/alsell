@@ -80,21 +80,27 @@ router.post('/listing/:listing_id', auth, async (req, res) => {
 });
 
 // Remove expired boosts (called by cron)
-router.post('/cleanup', async (req, res) => {
-  try {
-    const expired = await db.query(
-      'UPDATE boosts SET active=false WHERE expires_at < NOW() AND active=true RETURNING listing_id'
+async function cleanupExpiredBoosts() {
+  const expired = await db.query(
+    'UPDATE boosts SET active=false WHERE expires_at < NOW() AND active=true RETURNING listing_id'
+  );
+  for (const row of expired.rows) {
+    await db.query(
+      'UPDATE listings SET is_boosted=false, boosted_until=NULL WHERE id=$1',
+      [row.listing_id]
     );
-    for (const row of expired.rows) {
-      await db.query(
-        'UPDATE listings SET is_boosted=false, boosted_until=NULL WHERE id=$1',
-        [row.listing_id]
-      );
-    }
-    res.json({ cleaned: expired.rows.length });
+  }
+  return { cleaned: expired.rows.length };
+}
+
+router.post('/cleanup', auth, async (req, res) => {
+  try {
+    const result = await cleanupExpiredBoosts();
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 module.exports = router;
+module.exports.cleanupExpiredBoosts = cleanupExpiredBoosts;
