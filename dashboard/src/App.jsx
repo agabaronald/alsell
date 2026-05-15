@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import useAuthStore from './store/auth';
 import Login from './pages/Login';
 import Layout from './components/Layout';
@@ -11,45 +11,51 @@ import SellerDashboard from './pages/SellerDashboard';
 import BuyerDashboard from './pages/BuyerDashboard';
 import AdminLog from './pages/AdminLog';
 
-function ProtectedRoute({ children, requireAdmin = false }) {
-  const { user } = useAuthStore();
+const ADMIN_ROLES = ['superadmin', 'moderator', 'staff'];
+
+function RequireAuth() {
+  const user = useAuthStore(s => s.user);
   if (!user) return <Navigate to="/login" replace />;
-  if (requireAdmin) {
-    const adminRoles = ['superadmin', 'moderator', 'staff'];
-    if (!adminRoles.includes(user.role)) {
-      return <Navigate to="/seller" replace />;
-    }
-  }
-  return children;
+  return <Outlet />;
+}
+
+function RequireAdmin() {
+  const user = useAuthStore(s => s.user);
+  if (!user) return <Navigate to="/login" replace />;
+  if (!ADMIN_ROLES.includes(user.role)) return <Navigate to="/seller" replace />;
+  return <Outlet />;
+}
+
+function HomeRedirect() {
+  const user = useAuthStore(s => s.user);
+  if (!user) return <Navigate to="/login" replace />;
+  if (ADMIN_ROLES.includes(user.role)) return <Navigate to="/overview" replace />;
+  return <Navigate to="/seller" replace />;
 }
 
 export default function App() {
-  const { user } = useAuthStore();
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
-        <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-          <Route index element={
-            (() => {
-              const { user } = useAuthStore();
-              const adminRoles = ['superadmin', 'moderator', 'staff'];
-              return adminRoles.includes(user?.role)
-                ? <Navigate to="/overview" replace />
-                : <Navigate to="/seller" replace />;
-            })()
-          } />
-          <Route path="overview" element={<ProtectedRoute requireAdmin><Overview /></ProtectedRoute>} />
-          <Route path="users" element={<ProtectedRoute requireAdmin><Users /></ProtectedRoute>} />
-          <Route path="users/:id" element={<ProtectedRoute requireAdmin><UserDetail /></ProtectedRoute>} />
-          <Route path="listings" element={<ProtectedRoute requireAdmin><Listings /></ProtectedRoute>} />
-          <Route path="reports" element={<ProtectedRoute requireAdmin><Reports /></ProtectedRoute>} />
-          <Route path="log" element={<ProtectedRoute requireAdmin><AdminLog /></ProtectedRoute>} />
-          <Route path="seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
-          <Route path="buyer" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route element={<RequireAuth />}>
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomeRedirect />} />
+            {/* Admin only routes */}
+            <Route element={<RequireAdmin />}>
+              <Route path="/overview" element={<Overview />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/users/:id" element={<UserDetail />} />
+              <Route path="/listings" element={<Listings />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/log" element={<AdminLog />} />
+            </Route>
+            {/* All authenticated users */}
+            <Route path="/seller" element={<SellerDashboard />} />
+            <Route path="/buyer" element={<BuyerDashboard />} />
+          </Route>
         </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
