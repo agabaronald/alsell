@@ -100,6 +100,7 @@ export default function SellerDashboard() {
   const filteredListings = listingFilter ? listings.filter(l => l.status === listingFilter) : listings;
 
   return (
+    <>
     <div style={{ padding: 28 }}>
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Seller Dashboard</h1>
@@ -256,6 +257,7 @@ export default function SellerDashboard() {
           </div>
         </div>
       )}
+    </>
   );
 }
 
