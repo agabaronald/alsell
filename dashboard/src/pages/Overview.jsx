@@ -57,7 +57,9 @@ export default function Overview() {
   );
 
   return (
-    <div style={{ padding: 28 }}>
+    <>
+    <style>{`@media (max-width: 767px) { .ov-charts { grid-template-columns: 1fr !important; } .ov-page { padding: 16px !important; } }`}</style>
+    <div className="ov-page" style={{ padding: 28 }}>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Platform Overview</h1>
@@ -79,7 +81,7 @@ export default function Overview() {
       </div>
 
       {/* Charts row 1 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div className="ov-charts" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
         {/* User growth */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 20 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>User growth</div>
@@ -124,7 +126,7 @@ export default function Overview() {
       </div>
 
       {/* Charts row 2 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div className="ov-charts" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
         {/* Category breakdown */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 20 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>Listings by category</div>
@@ -201,5 +203,6 @@ export default function Overview() {
         </div>
       </div>
     </div>
+    </>
   );
 }

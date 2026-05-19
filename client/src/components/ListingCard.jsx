@@ -8,9 +8,11 @@ export default function ListingCard({ listing, darkMode, onOpen, isFaved, onFave
   const [hovered, setHovered] = useState(false);
   const cond = conditionColor(listing.condition);
   return (
+    <>
+    <style>{`@media (max-width: 767px) { .lc-img { height: 120px !important; } .lc-price { font-size: 15px !important; } .lc-title { font-size: 12px !important; } }`}</style>
     <div onClick={() => onOpen(listing)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
       style={{ background: darkMode ? G.surface : "#fff", border: `1px solid ${darkMode ? (hovered ? "rgba(201,168,76,0.3)" : G.borderDark) : hovered ? "rgba(201,168,76,0.4)" : G.border}`, borderRadius: 14, overflow: "hidden", cursor: "pointer", transition: "all 0.2s", transform: hovered ? "translateY(-2px)" : "none", boxShadow: hovered ? `0 8px 24px rgba(0,0,0,${darkMode ? "0.4" : "0.08"})` : "none" }}>
-      <div style={{ height: 160, overflow: "hidden", position: "relative" }}>
+      <div className="lc-img" style={{ height: 160, overflow: "hidden", position: "relative" }}>
         {listing.photos && listing.photos.length > 0 ? (
           <img src={listing.photos[0]} alt={listing.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
@@ -24,9 +26,9 @@ export default function ListingCard({ listing, darkMode, onOpen, isFaved, onFave
         </button>
         <div style={{ position: "absolute", bottom: 8, left: 10, fontSize: 10, color: "rgba(255,255,255,0.6)", fontFamily: "DM Sans,sans-serif" }}>{timeAgo(listing.created_at)}</div>
       </div>
-      <div style={{ padding: "12px 14px 14px" }}>
-        <div style={{ fontSize: 17, fontWeight: 700, color: darkMode ? G.gold : G.ink, fontFamily: "DM Sans,sans-serif", marginBottom: 3 }}>{fmt(listing.price)}</div>
-        <div style={{ fontSize: 13, color: darkMode ? "rgba(255,255,255,0.7)" : G.ink2, fontFamily: "DM Sans,sans-serif", marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{listing.title}</div>
+        <div style={{ padding: "10px 12px 12px" }}>
+        <div className="lc-price" style={{ fontSize: 17, fontWeight: 700, color: darkMode ? G.gold : G.ink, fontFamily: "DM Sans,sans-serif", marginBottom: 3 }}>{fmt(listing.price)}</div>
+        <div className="lc-title" style={{ fontSize: 13, color: darkMode ? "rgba(255,255,255,0.7)" : G.ink2, fontFamily: "DM Sans,sans-serif", marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{listing.title}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
           {listing.condition && listing.condition !== "N/A" && (
             <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 20, background: darkMode ? "rgba(201,168,76,0.1)" : cond.bg, color: darkMode ? G.goldLight : cond.color, fontFamily: "DM Sans,sans-serif" }}>{listing.condition}</span>
@@ -41,5 +43,6 @@ export default function ListingCard({ listing, darkMode, onOpen, isFaved, onFave
         </div>
       </div>
     </div>
+    </>
   );
 }

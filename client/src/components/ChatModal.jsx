@@ -40,7 +40,7 @@ export default function ChatModal({ offer, darkMode, onClose, user }) {
 
   return (
     <div style={{ minHeight: "100vh", background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
-      <div style={{ background: bg, borderRadius: 18, width: "100%", maxWidth: 520, overflow: "hidden", display: "flex", flexDirection: "column", height: 560 }}>
+      <div style={{ background: bg, borderRadius: 18, width: "100%", maxWidth: 520, overflow: "hidden", display: "flex", flexDirection: "column", height: 560, maxHeight: "85vh" }}>
         <div style={{ background: G.black, padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", fontFamily: "DM Sans,sans-serif" }}>{offer.listing_title}</div>

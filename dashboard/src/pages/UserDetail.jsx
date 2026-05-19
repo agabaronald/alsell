@@ -54,14 +54,16 @@ export default function UserDetail() {
   const tabs = ['listings', 'offers', 'reviews', 'reports'];
 
   return (
-    <div style={{ padding: 28 }}>
+    <>
+    <style>{`@media (max-width: 767px) { .ud-page { padding: 16px !important; } .ud-stats { grid-template-columns: repeat(2, 1fr) !important; } .ud-header { flex-direction: column !important; } .ud-actions { flex-wrap: wrap !important; } }`}</style>
+    <div className="ud-page" style={{ padding: 28 }}>
       <button onClick={() => navigate('/admin/users')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 13, marginBottom: 20, padding: 0 }}>
         <ArrowLeft size={14} /> Back to users
       </button>
 
       {/* User header */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 24, marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+        <div className="ud-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--gold-dim)', border: '1px solid var(--gold-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: 'var(--gold)' }}>
               {user.username?.slice(0, 2).toUpperCase()}
@@ -75,7 +77,7 @@ export default function UserDetail() {
               </div>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="ud-actions" style={{ display: 'flex', gap: 8 }}>
             {!user.is_verified && (
               <button onClick={handleVerify} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--green-dim)', border: '1px solid rgba(61,214,140,0.2)', borderRadius: 8, padding: '8px 14px', fontSize: 12, color: 'var(--green)', cursor: 'pointer' }}>
                 <CheckCircle size={12} /> Verify
@@ -93,7 +95,7 @@ export default function UserDetail() {
         </div>
 
         {/* Stats row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
+        <div className="ud-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
           {[
             { label: 'Listings', value: listings.length },
             { label: 'Offers made', value: offers.length },
@@ -216,5 +218,6 @@ export default function UserDetail() {
         />
       )}
     </div>
+    </>
   );
 }

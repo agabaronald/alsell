@@ -44,6 +44,8 @@ export default function SellModal({ darkMode, onClose, onPost, showToast }) {
   };
 
   return (
+    <>
+    <style>{`@media (max-width: 767px) { .sm-gen-wrap { position: static !important; } .sm-gen-btn { position: static !important; margin-top: 6px !important; width: 100% !important; } .sm-textarea { padding-right: 14px !important; } }`}</style>
     <div
       style={{
         minHeight: "100vh",
@@ -332,8 +334,9 @@ export default function SellModal({ darkMode, onClose, onPost, showToast }) {
               </div>
               <div>
                 <label style={labelStyle}>Description</label>
-                <div style={{ position: "relative" }}>
+                <div className="sm-gen-wrap" style={{ position: "relative" }}>
                   <textarea
+                    className="sm-textarea"
                     style={{
                       ...inputStyle,
                       height: 90,
@@ -346,7 +349,7 @@ export default function SellModal({ darkMode, onClose, onPost, showToast }) {
                       setForm({ ...form, description: e.target.value })
                     }
                   />
-                  <button
+                  <button className="sm-gen-btn"
                     onClick={async () => {
                       if (!form.title) {
                         showToast("Enter a title first");
@@ -689,5 +692,6 @@ export default function SellModal({ darkMode, onClose, onPost, showToast }) {
         </div>
       </div>
     </div>
+    </>
   );
 }

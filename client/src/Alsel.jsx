@@ -219,6 +219,8 @@ export default function Alsel() {
   };
 
   return (
+    <>
+    <style>{`@media (max-width: 767px) { .modal-overlay { padding: 20px 12px !important; } }`}</style>
     <div style={{ minHeight: "100vh", background: darkMode ? G.black : G.cream, fontFamily: "DM Sans,sans-serif", transition: "background 0.3s" }}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
@@ -308,7 +310,7 @@ export default function Alsel() {
       )}
 
       {toast && (
-        <div style={{ position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)", background: G.gold, color: G.black, padding: "12px 24px", borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 300, fontFamily: "DM Sans,sans-serif", whiteSpace: "nowrap" }}>
+        <div style={{ position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)", background: G.gold, color: G.black, padding: "12px 24px", borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 300, fontFamily: "DM Sans,sans-serif", maxWidth: "90vw", textAlign: "center", wordBreak: "break-word" }}>
           {toast}
         </div>
       )}
@@ -382,5 +384,6 @@ export default function Alsel() {
         </div>
       </div>
     </div>
+    </>
   );
 }

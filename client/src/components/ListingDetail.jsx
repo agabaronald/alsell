@@ -52,22 +52,24 @@ export default function ListingDetail({ listing, darkMode, onClose, isFaved, onF
   };
 
   return (
+    <>
+    <style>{`@media (max-width: 767px) { .ld-img { height: 180px !important; } .ld-body { padding: 16px !important; } .ld-price { font-size: 22px !important; } .ld-title { font-size: 15px !important; } }`}</style>
     <div style={{ minHeight: "100vh", background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 20px" }}>
       <div style={{ background: bg, borderRadius: 18, width: "100%", maxWidth: 640, overflow: "hidden", position: "relative" }}>
         <button onClick={onClose}
           style={{ position: "absolute", top: 16, right: 16, zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "rgba(0,0,0,0.5)", border: "none", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
-        <div style={{ height: 280 }}>
+        <div className="ld-img" style={{ height: 280 }}>
           {listing.photos && listing.photos.length > 0 ? (
             <img src={listing.photos[0]} alt={listing.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           ) : (
             <ListingPlaceholder id={listing.id} category={listing.category} />
           )}
         </div>
-        <div style={{ padding: "24px 28px" }}>
+        <div className="ld-body" style={{ padding: "24px 28px" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 12 }}>
             <div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: darkMode ? G.gold : G.ink, fontFamily: "DM Sans,sans-serif" }}>{fmt(listing.price)}</div>
-              <div style={{ fontSize: 17, fontWeight: 500, color: textPrimary, fontFamily: "DM Sans,sans-serif", marginTop: 4 }}>{listing.title}</div>
+              <div className="ld-price" style={{ fontSize: 26, fontWeight: 700, color: darkMode ? G.gold : G.ink, fontFamily: "DM Sans,sans-serif" }}>{fmt(listing.price)}</div>
+              <div className="ld-title" style={{ fontSize: 17, fontWeight: 500, color: textPrimary, fontFamily: "DM Sans,sans-serif", marginTop: 4 }}>{listing.title}</div>
             </div>
             <button onClick={() => onFave(listing.id)}
               style={{ flexShrink: 0, width: 40, height: 40, borderRadius: "50%", background: isFaved ? G.gold : "transparent", border: `1.5px solid ${isFaved ? G.gold : borderColor}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.2s" }}>
@@ -224,5 +226,6 @@ export default function ListingDetail({ listing, darkMode, onClose, isFaved, onF
         </div>
       )}
     </div>
+    </>
   );
 }
