@@ -215,7 +215,7 @@ export default function ListingDetail({ listing, darkMode, onClose, isFaved, onF
       </div>
       {showEdit && (
         <div style={{ position: "fixed", inset: 0, zIndex: 300, overflowY: "auto" }}>
-          <EditListingModal listing={listing} darkMode={darkMode} onClose={() => setShowEdit(false)} onSaved={(updated) => { onClose(); showToast('Listing updated!'); }} showToast={showToast} />
+          <EditListingModal listing={listing} darkMode={darkMode} onClose={() => setShowEdit(false)} onSaved={() => { onClose(); showToast('Listing updated!'); }} showToast={showToast} />
         </div>
       )}
       {showBoost && (

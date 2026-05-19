@@ -13,7 +13,6 @@ export default function Listings() {
   const [removeTarget, setRemoveTarget] = useState(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([k, v]) => v && params.append(k, v));
@@ -23,7 +22,18 @@ export default function Listings() {
     finally { setLoading(false); }
   }, [filters]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([k, v]) => v && params.append(k, v));
+      try {
+        const res = await api.get(`/admin/listings?${params}`);
+        setData(res);
+      } catch { toast.error('Failed to load listings'); }
+      finally { setLoading(false); }
+    };
+    fetchData();
+  }, [filters]);
 
   const handleRemove = async (values) => {
     try {

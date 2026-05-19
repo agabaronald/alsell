@@ -1,10 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, Ban, CheckCircle, Shield } from 'lucide-react';
+import { Search, Ban, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import api from '../lib/api';
 import Pagination from '../components/Pagination';
-import Modal from '../components/Modal';
 import PromptModal from '../components/PromptModal';
 import toast from 'react-hot-toast';
 
@@ -16,20 +15,33 @@ export default function Users() {
   const navigate = useNavigate();
 
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([k, v]) => v && params.append(k, v));
       const res = await api.get(`/admin/users?${params}`);
       setData(res);
-    } catch (err) {
+    } catch {
       toast.error('Failed to load users');
     } finally {
       setLoading(false);
     }
   }, [filters]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([k, v]) => v && params.append(k, v));
+      try {
+        const res = await api.get(`/admin/users?${params}`);
+        setData(res);
+      } catch {
+        toast.error('Failed to load users');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [filters]);
 
   const handleBan = async (values) => {
     try {

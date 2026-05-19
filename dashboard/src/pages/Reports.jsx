@@ -14,7 +14,6 @@ export default function Reports() {
   const [actionTarget, setActionTarget] = useState(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       const res = await api.get(`/admin/reports?status=${status}&page=${page}`);
       setData(res);
@@ -22,7 +21,16 @@ export default function Reports() {
     finally { setLoading(false); }
   }, [status, page]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get(`/admin/reports?status=${status}&page=${page}`);
+        setData(res);
+      } catch { toast.error('Failed to load reports'); }
+      finally { setLoading(false); }
+    };
+    fetchData();
+  }, [status, page]);
 
   const handleStatusChange = (s) => {
     setStatus(s);

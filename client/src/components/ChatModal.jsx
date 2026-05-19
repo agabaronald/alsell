@@ -7,7 +7,7 @@ import { API } from '../constants';
 export default function ChatModal({ offer, darkMode, onClose, user }) {
   const [messages, setMessages] = useState([]);
   const [body, setBody] = useState("");
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
   const bottomRef = useRef(null);
   const bg = darkMode ? G.surface : "#fff";
   const textPrimary = darkMode ? "#fff" : G.ink;
@@ -18,18 +18,18 @@ export default function ChatModal({ offer, darkMode, onClose, user }) {
     fetch(`${API}/messages/${offer.id}`, { headers: authHeaders() })
       .then((r) => r.json())
       .then((data) => Array.isArray(data) && setMessages(data));
-    const s = io(SOCKET_URL);
+    const s = io(SOCKET_URL, { reconnection: true, reconnectionAttempts: 5 });
     s.emit("join_room", offer.id);
     s.on("receive_message", (msg) => setMessages((prev) => [...prev, msg]));
-    setSocket(s);
+    socketRef.current = s;
     return () => s.disconnect();
   }, [offer.id]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
   const sendMessage = () => {
-    if (!body.trim() || !socket) return;
-    socket.emit("send_message", {
+    if (!body.trim() || !socketRef.current) return;
+    socketRef.current.emit("send_message", {
       offer_id: offer.id,
       sender_id: user.id,
       sender_name: user.username,

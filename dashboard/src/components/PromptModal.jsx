@@ -15,7 +15,7 @@ export default function PromptModal({ title, fields, onConfirm, onClose }) {
     setLoading(true);
     try {
       await onConfirm(values);
-    } catch (e) {
+    } catch {
       setLoading(false);
     }
   };

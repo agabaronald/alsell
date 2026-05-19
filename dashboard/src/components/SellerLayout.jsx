@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { TrendingUp, ShoppingBag, Package, MessageSquare, Star, LayoutDashboard, ExternalLink, LogOut } from 'lucide-react';
 import useAuthStore, { ADMIN_ROLES } from '../store/auth';
@@ -25,6 +26,7 @@ const NavItem = ({ to, icon: Icon, label, badge }) => (
 export default function SellerLayout() {
   const { user, logout, canAccessBuyer } = useAuthStore();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -34,7 +36,12 @@ export default function SellerLayout() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside style={{ width: 220, background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', flexShrink: 0, position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 50 }}>
+      <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}
+        style={{ position: 'fixed', top: 12, left: 12, zIndex: 60, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', fontSize: 18 }}>
+        {sidebarOpen ? '×' : '☰'}
+      </button>
+      {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`} style={{ width: 220, background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', flexShrink: 0, position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 50 }}>
         <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--gold)', letterSpacing: -0.5 }}>
             al<span style={{ color: 'var(--text-primary)' }}>sel</span>
@@ -89,7 +96,7 @@ export default function SellerLayout() {
         </div>
       </aside>
 
-      <main style={{ flex: 1, marginLeft: 220, minHeight: '100vh', background: 'var(--black)' }}>
+      <main className="main-content" style={{ flex: 1, marginLeft: 220, minHeight: '100vh', background: 'var(--black)' }}>
         <Outlet />
       </main>
     </div>

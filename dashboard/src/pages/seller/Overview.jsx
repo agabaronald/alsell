@@ -27,7 +27,7 @@ export default function SellerOverview() {
             offers: (ac.value.offers || []).map(d => ({ ...d, date: format(parseISO(d.date), 'MMM d') })),
           });
         } else console.error('Activity failed:', ac.reason);
-      } catch (err) {
+      } catch {
         toast.error('Failed to load overview');
       } finally {
         setLoading(false);

@@ -40,7 +40,7 @@ export default function Overview() {
         setCategories(cat);
         setConversions(conv.map(d => ({ ...d, date: format(parseISO(d.date), 'MMM d') })));
         setTopSellers(ts);
-      } catch (err) {
+      } catch {
         toast.error('Failed to load analytics');
       } finally {
         setLoading(false);

@@ -4,7 +4,7 @@ import { fmt } from '../utils';
 import { API } from '../constants';
 import ListingPlaceholder from './ListingPlaceholder';
 
-export default function BundleDetail({ bundleId, darkMode, textSecondary, textPrimary, borderColor, user, onAuthRequired, showToast, onClose }) {
+export default function BundleDetail({ bundleId, textSecondary, textPrimary, borderColor, user, onAuthRequired, showToast }) {
   const [detail, setDetail] = useState(null);
   const [offerSent, setOfferSent] = useState(false);
 

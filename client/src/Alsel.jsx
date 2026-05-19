@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { io } from "socket.io-client";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 
 delete L.Icon.Default.prototype._getIconUrl;

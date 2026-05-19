@@ -11,7 +11,6 @@ export default function AdminLog() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
     api.get(`/admin/analytics/log?page=${page}`)
       .then(data => {
         setLogs(Array.isArray(data.log) ? data.log : []);

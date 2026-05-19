@@ -10,8 +10,7 @@ export default function OffersModal({ darkMode, onClose, user, onOpenChat }) {
   const textPrimary = darkMode ? "#fff" : G.ink;
   const textSecondary = darkMode ? "rgba(255,255,255,0.5)" : G.ink2;
   const borderColor = darkMode ? G.borderDark : G.border;
-  const [counterAmt, setCounterAmt] = useState({});
-  const [showCounter, setShowCounter] = useState(null);
+
 
   const loadOffers = async () => {
     try {
