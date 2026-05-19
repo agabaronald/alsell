@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { TrendingUp, ShoppingBag, Package, MessageSquare, Star, LayoutDashboard, ExternalLink, LogOut } from 'lucide-react';
+import { TrendingUp, ShoppingBag, Package, MessageSquare, Star, Zap, Shield, BarChart3, LayoutDashboard, ExternalLink, LogOut } from 'lucide-react';
 import useAuthStore, { ADMIN_ROLES } from '../store/auth';
 import toast from 'react-hot-toast';
 import NavItem from './NavItem';
@@ -41,6 +41,10 @@ export default function SellerLayout() {
           <NavItem to="/seller/listings" icon={Package} label="My Listings" />
           <NavItem to="/seller/offers" icon={MessageSquare} label="Incoming Offers" />
           <NavItem to="/seller/reviews" icon={Star} label="Reviews" />
+          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '16px 6px 4px' }}>Insights</div>
+          <NavItem to="/seller/analytics" icon={BarChart3} label="Sales Analytics" />
+          <NavItem to="/seller/boosts" icon={Zap} label="Boost History" />
+          <NavItem to="/seller/trust" icon={Shield} label="Trust Score" />
 
           <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '16px 6px 4px' }}>Switch portal</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', borderRadius: 9, fontSize: 13, fontWeight: 500, color: 'var(--gold)', background: 'var(--gold-dim)', border: '1px solid var(--gold-border)', marginBottom: 2 }}>

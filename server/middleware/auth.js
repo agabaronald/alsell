@@ -17,6 +17,9 @@ module.exports = async (req, res, next) => {
   try {
     const token = header.split(' ')[1];
     req.user = jwt.verify(token, process.env.JWT_SECRET);
+    if (req.user.role === 'banned') {
+      return res.status(403).json({ error: 'Account suspended' });
+    }
     req.fingerprint = generateFingerprint(req);
     req.clientIp = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || '';
     next();

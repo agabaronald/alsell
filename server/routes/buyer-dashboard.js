@@ -142,4 +142,40 @@ router.get('/favourites', auth, async (req, res) => {
   }
 });
 
+// Purchase history (accepted offers)
+router.get('/purchases', auth, async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT o.*, l.title as listing_title, l.price as listing_price,
+        l.photos as listing_photos, l.category, l.location,
+        u.username as seller_name
+      FROM offers o
+      LEFT JOIN listings l ON o.listing_id=l.id
+      LEFT JOIN users u ON l.user_id=u.id
+      WHERE o.buyer_id=$1 AND o.status='accepted'
+      ORDER BY o.updated_at DESC
+    `, [req.user.id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Reviews given by the buyer
+router.get('/reviews', auth, async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT r.*, u.username as seller_name, l.title as listing_title
+      FROM reviews r
+      LEFT JOIN users u ON r.seller_id=u.id
+      LEFT JOIN listings l ON r.listing_id=l.id
+      WHERE r.reviewer_id=$1
+      ORDER BY r.created_at DESC
+    `, [req.user.id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

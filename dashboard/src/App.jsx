@@ -19,6 +19,11 @@ import BuyerOffers from './pages/buyer/Offers';
 import BuyerBids from './pages/buyer/Bids';
 import BuyerFavourites from './pages/buyer/Favourites';
 import AdminLog from './pages/AdminLog';
+import SellerAnalytics from './pages/seller/Analytics';
+import SellerBoosts from './pages/seller/Boosts';
+import SellerTrust from './pages/seller/Trust';
+import BuyerPurchases from './pages/buyer/Purchases';
+import BuyerReviewsGiven from './pages/buyer/ReviewsGiven';
 
 function RequireAuth() {
   const user = useAuthStore(s => s.user);
@@ -70,6 +75,9 @@ export default function App() {
             <Route path="/seller/listings" element={<SellerListings />} />
             <Route path="/seller/offers" element={<SellerOffers />} />
             <Route path="/seller/reviews" element={<SellerReviews />} />
+            <Route path="/seller/analytics" element={<SellerAnalytics />} />
+            <Route path="/seller/boosts" element={<SellerBoosts />} />
+            <Route path="/seller/trust" element={<SellerTrust />} />
           </Route>
 
           {/* Buyer portal */}
@@ -79,6 +87,8 @@ export default function App() {
             <Route path="/buyer/offers" element={<BuyerOffers />} />
             <Route path="/buyer/bids" element={<BuyerBids />} />
             <Route path="/buyer/favourites" element={<BuyerFavourites />} />
+            <Route path="/buyer/purchases" element={<BuyerPurchases />} />
+            <Route path="/buyer/reviews" element={<BuyerReviewsGiven />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

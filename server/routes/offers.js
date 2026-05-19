@@ -64,7 +64,11 @@ router.get('/:id', auth, async (req, res) => {
       [req.params.id]
     );
     if (!result.rows.length) return res.status(404).json({ error: 'Offer not found' });
-    res.json(result.rows[0]);
+    const o = result.rows[0];
+    if (o.buyer_id !== req.user.id && o.seller_id !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    res.json(o);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

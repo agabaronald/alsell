@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, Package, Flag, ScrollText, TrendingUp, ShoppingBag, ExternalLink, LogOut } from 'lucide-react';
 import useAuthStore, { ADMIN_ROLES } from '../store/auth';
+import { can } from '../store/permissions';
 import toast from 'react-hot-toast';
 import NavItem from './NavItem';
 
 const CLIENT_URL = import.meta.env.VITE_CLIENT_URL || 'https://alsell.vercel.app';
 
 export default function AdminLayout() {
-  const { user, logout, isSuperAdmin, canAccessSeller, canAccessBuyer } = useAuthStore();
+  const { user, logout, canAccessSeller, canAccessBuyer } = useAuthStore();
+  const role = user?.role;
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -38,10 +40,10 @@ export default function AdminLayout() {
         <nav style={{ flex: 1, padding: '12px 10px', overflowY: 'auto' }}>
           <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '8px 6px 4px' }}>Platform</div>
           <NavItem to="/admin/overview" icon={LayoutDashboard} label="Overview" />
-          <NavItem to="/admin/users" icon={Users} label="Users" />
-          <NavItem to="/admin/listings" icon={Package} label="Listings" />
-          <NavItem to="/admin/reports" icon={Flag} label="Reports" />
-          {isSuperAdmin() && <NavItem to="/admin/log" icon={ScrollText} label="Audit log" />}
+          {can('VIEW_USERS', role) && <NavItem to="/admin/users" icon={Users} label={can('MANAGE_USERS', role) ? 'Users' : 'Users (view)'} />}
+          {can('VIEW_LISTINGS', role) && <NavItem to="/admin/listings" icon={Package} label={can('REMOVE_LISTINGS', role) ? 'Listings' : 'Listings (view)'} />}
+          {can('VIEW_REPORTS', role) && <NavItem to="/admin/reports" icon={Flag} label={can('RESOLVE_REPORTS', role) ? 'Reports' : 'Reports (view)'} />}
+          {can('VIEW_AUDIT_LOG', role) && <NavItem to="/admin/log" icon={ScrollText} label="Audit log" />}
 
           <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '16px 6px 4px' }}>Switch portal</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', borderRadius: 9, fontSize: 13, fontWeight: 500, color: 'var(--gold)', background: 'var(--gold-dim)', border: '1px solid var(--gold-border)', marginBottom: 2 }}>

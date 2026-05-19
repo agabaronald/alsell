@@ -79,6 +79,23 @@ router.post('/listing/:listing_id', auth, async (req, res) => {
   }
 });
 
+// Get user's boost history
+router.get('/history', auth, async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT b.*, l.title as listing_title, l.price as listing_price
+      FROM boosts b
+      LEFT JOIN listings l ON b.listing_id=l.id
+      WHERE b.user_id=$1
+      ORDER BY b.created_at DESC
+      LIMIT 50
+    `, [req.user.id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Remove expired boosts (called by cron)
 async function cleanupExpiredBoosts() {
   const expired = await db.query(

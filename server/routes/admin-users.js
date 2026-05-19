@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
-const { isModerator, isSuperAdmin } = require('../middleware/roles');
+const { isModerator, isSuperAdmin, isStaff } = require('../middleware/roles');
 
 // Get all users with pagination and filters
-router.get('/', auth, isModerator, async (req, res) => {
+router.get('/', auth, isStaff, async (req, res) => {
   const { page = 1, limit = 20, search, role, verified, sort = 'newest' } = req.query;
   const offset = (page - 1) * limit;
   try {
@@ -63,7 +63,7 @@ router.get('/', auth, isModerator, async (req, res) => {
 });
 
 // Get single user full profile
-router.get('/:id', auth, isModerator, async (req, res) => {
+router.get('/:id', auth, isStaff, async (req, res) => {
   try {
     const [user, listings, offers, reviews, reports] = await Promise.all([
       db.query('SELECT * FROM users WHERE id=$1', [req.params.id]),

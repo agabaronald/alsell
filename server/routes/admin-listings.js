@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
-const { isModerator, isSuperAdmin } = require('../middleware/roles');
+const { isModerator, isSuperAdmin, isStaff } = require('../middleware/roles');
 
 // Get all listings with full details
-router.get('/', auth, isModerator, async (req, res) => {
+router.get('/', auth, isStaff, async (req, res) => {
   const { page = 1, limit = 20, search, category, status, sort = 'newest' } = req.query;
   const offset = (page - 1) * limit;
   try {

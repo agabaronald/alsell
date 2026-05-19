@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
     );
     const user = result.rows[0];
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
@@ -98,7 +98,7 @@ router.post('/login', async (req, res) => {
     ).catch(() => {});
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
@@ -179,7 +179,7 @@ router.post('/login/2fa', async (req, res) => {
     ).catch(() => {});
 
     const token = jwt.sign(
-      { id: u.id, email: u.email },
+      { id: u.id, email: u.email, role: u.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );

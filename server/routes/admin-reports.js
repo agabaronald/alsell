@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
-const { isModerator } = require('../middleware/roles');
+const { isModerator, isStaff } = require('../middleware/roles');
 
 // Get all reports with filters
-router.get('/', auth, isModerator, async (req, res) => {
+router.get('/', auth, isStaff, async (req, res) => {
   const { page = 1, limit = 20, status = 'pending' } = req.query;
   const offset = (page - 1) * limit;
   try {

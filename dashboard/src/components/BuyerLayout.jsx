@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingBag, TrendingUp, ShoppingCart, Gavel, Heart, LayoutDashboard, ExternalLink, LogOut } from 'lucide-react';
+import { ShoppingBag, TrendingUp, ShoppingCart, Gavel, Heart, CreditCard, MessageSquare, LayoutDashboard, ExternalLink, LogOut } from 'lucide-react';
 import useAuthStore, { ADMIN_ROLES } from '../store/auth';
 import toast from 'react-hot-toast';
 import NavItem from './NavItem';
@@ -41,6 +41,9 @@ export default function BuyerLayout() {
           <NavItem to="/buyer/offers" icon={ShoppingCart} label="My Offers" />
           <NavItem to="/buyer/bids" icon={Gavel} label="Auction Bids" />
           <NavItem to="/buyer/favourites" icon={Heart} label="Saved Listings" />
+          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '16px 6px 4px' }}>History</div>
+          <NavItem to="/buyer/purchases" icon={CreditCard} label="Purchase History" />
+          <NavItem to="/buyer/reviews" icon={MessageSquare} label="Reviews Given" />
 
           <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '16px 6px 4px' }}>Switch portal</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', borderRadius: 9, fontSize: 13, fontWeight: 500, color: 'var(--gold)', background: 'var(--gold-dim)', border: '1px solid var(--gold-border)', marginBottom: 2 }}>

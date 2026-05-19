@@ -100,11 +100,11 @@ app.get('/api/auth/google/callback',
   passport.authenticate('google', { failureRedirect: `${process.env.CLIENT_URL}/login` }),
   (req, res) => {
     const token = jwt.sign(
-      { id: req.user.id, email: req.user.email },
+      { id: req.user.id, email: req.user.email, role: req.user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
-    const user = { id: req.user.id, email: req.user.email, username: req.user.username };
+    const user = { id: req.user.id, email: req.user.email, username: req.user.username, role: req.user.role };
     res.redirect(`${process.env.CLIENT_URL}?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
   }
 );
