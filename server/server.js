@@ -132,6 +132,7 @@ app.use('/api/seller', require('./routes/seller-dashboard'));
 app.use('/api/buyer', require('./routes/buyer-dashboard'));
 app.use('/api/2fa', require('./routes/twofa'));
 app.use('/api/trust', require('./routes/trust'));
+app.use('/api/user', require('./routes/user'));
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Alsel API running — Phase 4' });

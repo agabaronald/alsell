@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
-import useAuthStore from '../store/auth';
+import useAuthStore, { ADMIN_ROLES } from '../store/auth';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const { login } = useAuthStore();
+  const { login, setStatus } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,11 +21,16 @@ export default function Login() {
       }
       login(data.user, data.token);
       toast.success(`Welcome back, ${data.user.username}`);
-      const role = data.user.role;
-      if (role === 'superadmin' || role === 'moderator' || role === 'staff') {
-        navigate('/overview');
-      } else {
+
+      const status = await api.get('/user/status').catch(() => ({}));
+      setStatus(status);
+
+      if (ADMIN_ROLES.includes(data.user.role)) {
+        navigate('/admin/overview');
+      } else if (status.has_seller_activity) {
         navigate('/seller');
+      } else {
+        navigate('/buyer');
       }
     } catch (err) {
       toast.error(err.error || 'Invalid credentials');
@@ -37,7 +42,6 @@ export default function Login() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div style={{ width: '100%', maxWidth: 400 }}>
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--gold)', letterSpacing: -1, marginBottom: 4 }}>
             al<span style={{ color: 'var(--text-primary)' }}>sel</span>
@@ -48,7 +52,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 28 }}>
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>Email</label>

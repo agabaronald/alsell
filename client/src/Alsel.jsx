@@ -13,6 +13,7 @@ L.Icon.Default.mergeOptions({
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+const DASHBOARD_URL = import.meta.env.VITE_DASHBOARD_URL || "https://alsell-dash.vercel.app";
 
 const G = {
   gold: "#C9A84C",
@@ -165,6 +166,7 @@ function Navbar({
   onFavourites,
   onBundles,
   onSecurity,
+  onDashboard,
 }) {
   return (
     <nav
@@ -367,6 +369,12 @@ function Navbar({
                   </span>
                 )}
               </button>
+              {user && (
+                <button onClick={onDashboard} title="Dashboard"
+                  style={{ background: "none", border: `1px solid ${darkMode?"rgba(255,255,255,0.1)":G.border}`, borderRadius: 8, width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: darkMode?G.gold:G.ink2, fontSize: 14 }}>
+                  ☰
+                </button>
+              )}
               {user && (
                 <button onClick={onSecurity} title="Security Centre"
                   style={{ background: "none", border: `1px solid ${darkMode?"rgba(255,255,255,0.1)":G.border}`, borderRadius: 8, width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: darkMode?G.gold:G.ink2, fontSize: 14 }}>
@@ -4823,6 +4831,13 @@ export default function Alsel() {
     showToast("Signed out");
   };
 
+  const handleDashboard = () => {
+    const token = localStorage.getItem('alsel_token');
+    const userData = localStorage.getItem('alsel_user');
+    if (!token || !userData) { showToast('Please sign in'); return; }
+    window.location.href = `${DASHBOARD_URL}/auth?token=${token}&user=${encodeURIComponent(userData)}`;
+  };
+
   const handlePost = async (form, sellMode, auctionForm) => {
     const token = localStorage.getItem("alsel_token");
     if (!token) { showToast("Please sign in"); setShowAuth(true); return; }
@@ -5083,6 +5098,7 @@ export default function Alsel() {
         }
         onBundles={() => setShowBundles(true)}
         onSecurity={() => setShowSecurity(true)}
+        onDashboard={handleDashboard}
         unreadCount={unreadCount}
       />
       <Hero
