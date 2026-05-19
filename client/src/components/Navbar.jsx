@@ -79,7 +79,7 @@ export default function Navbar({ darkMode, setDarkMode, onSell, searchQuery, set
                     </span>
                   )}
                 </button>
-                <button onClick={onDashboard} title="Dashboard" style={iconBtn}>☰</button>
+                <button onClick={onDashboard} title="Dashboard" style={iconBtn}>⊞</button>
                 <button onClick={onSecurity} title="Security Centre" style={iconBtn}>🔐</button>
               </>
             )}
@@ -88,7 +88,7 @@ export default function Navbar({ darkMode, setDarkMode, onSell, searchQuery, set
               {user ? user.username.slice(0, 2).toUpperCase() : "?"}
             </div>
           </div>
-          <button className="nav-hamburger" onClick={() => setMenuOpen(true)} style={{ background: "none", border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : G.border}`, borderRadius: 8, width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: darkMode ? G.gold : G.ink2, fontSize: 18, marginLeft: "auto" }}>☰</button>
+          <button className="nav-hamburger" onClick={() => setMenuOpen(true)} style={{ background: "none", border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : G.border}`, borderRadius: 8, width: 36, height: 36, cursor: "pointer", alignItems: "center", justifyContent: "center", color: darkMode ? G.gold : G.ink2, fontSize: 18 }}>☰</button>
         </div>
       </nav>
       <div className={`nav-mobile-overlay ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(false)} />
@@ -120,7 +120,7 @@ export default function Navbar({ darkMode, setDarkMode, onSell, searchQuery, set
               )}
             </button>
             <button onClick={() => { onDashboard(); setMenuOpen(false); }} style={mobileIconBtn}>
-              ☰ Dashboard
+              ⊞ Dashboard
             </button>
             <button onClick={() => { onSecurity(); setMenuOpen(false); }} style={mobileIconBtn}>
               🔐 Security
