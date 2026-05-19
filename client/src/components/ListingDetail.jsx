@@ -46,7 +46,7 @@ export default function ListingDetail({ listing, darkMode, onClose, isFaved, onF
       });
       const data = await res.json();
       if (res.ok) { setOfferSent(true); onMakeOffer?.(data); }
-      else alert(data.error || "Failed to send offer");
+      else showToast(data.error || "Failed to send offer");
     } catch (err) { console.error(err); }
     finally { setSending(false); }
   };
@@ -199,7 +199,7 @@ export default function ListingDetail({ listing, darkMode, onClose, isFaved, onF
                       try {
                         const res = await fetch(`${API}/reviews`, { method: "POST", headers: authHeaders(), body: JSON.stringify({ seller_id: listing.user_id, listing_id: listing.id, rating: reviewForm.rating, comment: reviewForm.comment }) });
                         if (res.ok) setReviewSent(true);
-                        else { const d = await res.json(); alert(d.error || "Failed to submit review"); }
+                        else { const d = await res.json(); showToast(d.error || "Failed to submit review"); }
                       } catch (err) { console.error(err); }
                       finally { setSubmittingReview(false); }
                     }} disabled={submittingReview}

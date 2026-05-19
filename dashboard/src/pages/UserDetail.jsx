@@ -26,7 +26,7 @@ export default function UserDetail() {
       await api.patch(`/admin/users/${id}/ban`, { reason: values.reason });
       toast.success('User banned');
       setBanOpen(false);
-      navigate('/users');
+      navigate('/admin/users');
     } catch (err) { toast.error(err.error || 'Failed'); }
   };
 
@@ -55,7 +55,7 @@ export default function UserDetail() {
 
   return (
     <div style={{ padding: 28 }}>
-      <button onClick={() => navigate('/users')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 13, marginBottom: 20, padding: 0 }}>
+      <button onClick={() => navigate('/admin/users')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 13, marginBottom: 20, padding: 0 }}>
         <ArrowLeft size={14} /> Back to users
       </button>
 

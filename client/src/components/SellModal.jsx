@@ -3,7 +3,7 @@ import { G, CATEGORIES } from "../constants";
 import { fmt, authHeaders } from "../utils";
 import LocationPicker from "./LocationPicker";
 
-export default function SellModal({ darkMode, onClose, onPost }) {
+export default function SellModal({ darkMode, onClose, onPost, showToast }) {
   const [step, setStep] = useState(1);
   const [sellMode, setSellMode] = useState("fixed");
   const [auctionForm, setAuctionForm] = useState({ duration_hours: 24, reserve_price: "" });
@@ -278,7 +278,7 @@ export default function SellModal({ darkMode, onClose, onPost }) {
                     if (!files.length) return;
 
                     const remaining = 10 - (form.photos?.length || 0);
-                    if (remaining <= 0) { alert("Maximum 10 photos reached"); e.target.value = ''; return; }
+                    if (remaining <= 0) { showToast("Maximum 10 photos reached"); e.target.value = ''; return; }
                     const toUpload = files.slice(0, remaining);
 
                     const uploaded = [];
@@ -349,7 +349,7 @@ export default function SellModal({ darkMode, onClose, onPost }) {
                   <button
                     onClick={async () => {
                       if (!form.title) {
-                        alert("Enter a title first");
+                        showToast("Enter a title first");
                         return;
                       }
                       setForm((f) => ({ ...f, description: "Generating..." }));
@@ -408,7 +408,7 @@ export default function SellModal({ darkMode, onClose, onPost }) {
                 <button
                   onClick={async () => {
                     if (!form.title) {
-                      alert("Enter a title first");
+                      showToast("Enter a title first");
                       return;
                     }
                     try {
@@ -427,12 +427,10 @@ export default function SellModal({ darkMode, onClose, onPost }) {
                           ...f,
                           price: String(data.suggested),
                         }));
-                        alert(
-                          `Suggested range: UGX ${data.min?.toLocaleString()} – ${data.max?.toLocaleString()}`,
-                        );
+                        showToast(`UGX ${data.min?.toLocaleString()} – ${data.max?.toLocaleString()} suggested`);
                       }
                     } catch {
-                      alert("Could not suggest price");
+                      showToast("Could not suggest price");
                     }
                   }}
                   style={{

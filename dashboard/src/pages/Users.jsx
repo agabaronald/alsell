@@ -121,7 +121,7 @@ export default function Users() {
                   <tr key={u.id} style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', transition: 'background 0.1s' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    onClick={() => navigate(`/users/${u.id}`)}>
+                    onClick={() => navigate(`/admin/users/${u.id}`)}>
                     <td style={{ padding: '12px 14px' }}>
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{u.username}</div>
                       <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{u.email}</div>

@@ -12,6 +12,8 @@ export default function SecurityCentre({ darkMode, onClose, user, showToast }) {
   const [totpInput, setTotpInput] = useState('');
   const [activeTab, setActiveTab] = useState('trust');
   const [loading, setLoading] = useState(true);
+  const [showDisablePrompt, setShowDisablePrompt] = useState(false);
+  const [disableTotpInput, setDisableTotpInput] = useState('');
   const bg = darkMode ? G.surface : "#fff";
   const textPrimary = darkMode ? "#fff" : G.ink;
   const textSecondary = darkMode ? "rgba(255,255,255,0.5)" : G.ink2;
@@ -55,11 +57,12 @@ export default function SecurityCentre({ darkMode, onClose, user, showToast }) {
   };
 
   const handleDisable2FA = async () => {
-    if (!window.confirm('Disable two-factor authentication? You can set it up again later.')) return;
+    if (!showDisablePrompt) { setShowDisablePrompt(true); return; }
+    if (!disableTotpInput) { showToast('Enter your 6-digit code'); return; }
     try {
-      const res = await fetch(`${API}/twofa/disable`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ token: prompt('Enter current 6-digit code:') }) });
+      const res = await fetch(`${API}/twofa/disable`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ token: disableTotpInput }) });
       const data = await res.json();
-      if (res.ok) { setTwoFAStatus({ enabled: false }); showToast('2FA disabled'); }
+      if (res.ok) { setTwoFAStatus({ enabled: false }); setShowDisablePrompt(false); setDisableTotpInput(''); showToast('2FA disabled'); }
       else showToast(data.error || 'Failed to disable');
     } catch { showToast('Failed to disable 2FA'); }
   };
@@ -221,11 +224,24 @@ export default function SecurityCentre({ darkMode, onClose, user, showToast }) {
                 </div>
               )}
 
-              {twoFAStatus?.enabled && (
+              {twoFAStatus?.enabled && !showDisablePrompt && (
                 <button onClick={handleDisable2FA}
                   style={{ width: '100%', background: 'transparent', border: `1.5px solid rgba(224,80,80,0.4)`, borderRadius: 10, padding: '12px', fontSize: 14, fontWeight: 600, color: G.red, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>
                   Disable 2FA
                 </button>
+              )}
+              {twoFAStatus?.enabled && showDisablePrompt && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 16px', background: darkMode?G.surface2:G.cream, borderRadius: 12 }}>
+                  <div style={{ fontSize: 13, color: textSecondary, fontFamily: 'DM Sans,sans-serif' }}>Enter the 6-digit code from your authenticator app to confirm:</div>
+                  <input value={disableTotpInput} onChange={e => setDisableTotpInput(e.target.value)} maxLength={6} placeholder="000000"
+                    style={{ width: '100%', background: darkMode?G.surface2:G.cream, border: `1px solid ${borderColor}`, borderRadius: 9, padding: '11px 14px', fontSize: 18, color: textPrimary, fontFamily: 'DM Sans,sans-serif', outline: 'none', letterSpacing: 8, textAlign: 'center', boxSizing: 'border-box' }} />
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={() => { setShowDisablePrompt(false); setDisableTotpInput(''); }}
+                      style={{ flex: 1, background: 'transparent', border: `1px solid ${borderColor}`, borderRadius: 9, padding: '11px', fontSize: 13, color: textSecondary, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>Cancel</button>
+                    <button onClick={handleDisable2FA}
+                      style={{ flex: 1, background: G.red, border: 'none', borderRadius: 9, padding: '11px', fontSize: 13, fontWeight: 600, color: '#fff', cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>Disable 2FA</button>
+                  </div>
+                </div>
               )}
             </div>
           )}

@@ -1,27 +1,11 @@
 import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { ShoppingBag, TrendingUp, ShoppingCart, Gavel, Heart, LayoutDashboard, ExternalLink, LogOut } from 'lucide-react';
 import useAuthStore, { ADMIN_ROLES } from '../store/auth';
 import toast from 'react-hot-toast';
+import NavItem from './NavItem';
 
 const CLIENT_URL = import.meta.env.VITE_CLIENT_URL || 'https://alsell.vercel.app';
-
-const NavItem = ({ to, icon: Icon, label, badge }) => (
-  <NavLink to={to} style={({ isActive }) => ({
-    display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px',
-    borderRadius: 9, fontSize: 13, fontWeight: 500,
-    color: isActive ? 'var(--gold)' : 'var(--text-secondary)',
-    background: isActive ? 'var(--gold-dim)' : 'transparent',
-    border: isActive ? '1px solid var(--gold-border)' : '1px solid transparent',
-    marginBottom: 2,
-  })}>
-    <Icon size={15} />
-    <span style={{ flex: 1 }}>{label}</span>
-    {badge > 0 && (
-      <span style={{ background: 'var(--red)', color: '#fff', borderRadius: 10, padding: '1px 6px', fontSize: 10, fontWeight: 700 }}>{badge}</span>
-    )}
-  </NavLink>
-);
 
 export default function BuyerLayout() {
   const { user, logout, canAccessSeller } = useAuthStore();

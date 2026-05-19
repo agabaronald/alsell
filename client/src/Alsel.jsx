@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import L from "leaflet";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -59,6 +59,7 @@ export default function Alsel() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [user, setUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem("alsel_user")); }
@@ -66,8 +67,9 @@ export default function Alsel() {
   });
 
   const showToast = (msg) => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
     setToast(msg);
-    setTimeout(() => setToast(null), 3000);
+    toastTimer.current = setTimeout(() => setToast(null), 3000);
   };
 
   useEffect(() => {
@@ -106,7 +108,7 @@ export default function Alsel() {
         const res = await fetch(`${API}/listings?${params}`);
         const data = await res.json();
         if (data.listings) {
-          setListings(data.listings);
+          setListings(prev => page === 1 ? data.listings : [...prev, ...data.listings]);
           setTotalCount(data.total || 0);
           setTotalPages(data.pages || 1);
         } else {
@@ -154,13 +156,14 @@ export default function Alsel() {
   const toggleFav = async (id) => {
     if (!user) { setShowAuth(true); return; }
     const isFaved = favs.includes(id);
+    const prevFavs = favs;
     setFavs((prev) => (isFaved ? prev.filter((f) => f !== id) : [...prev, id]));
     try {
       if (isFaved)
         await fetch(`${API}/favourites/${id}`, { method: "DELETE", headers: authHeaders() });
       else
         await fetch(`${API}/favourites`, { method: "POST", headers: authHeaders(), body: JSON.stringify({ listing_id: id }) });
-    } catch (err) { console.error(err); }
+    } catch (err) { setFavs(prevFavs); console.error(err); }
   };
 
   const handleSearch = (override) => setActiveSearch(typeof override === "string" ? override : searchQuery);
@@ -238,7 +241,7 @@ export default function Alsel() {
 
       {showSell && (
         <div style={{ position: "fixed", inset: 0, zIndex: 200, overflowY: "auto" }}>
-          <SellModal darkMode={darkMode} onClose={() => setShowSell(false)} onPost={handlePost} />
+          <SellModal darkMode={darkMode} onClose={() => setShowSell(false)} onPost={handlePost} showToast={showToast} />
         </div>
       )}
 
@@ -263,7 +266,7 @@ export default function Alsel() {
       {showOffers && (
         <div style={{ position: "fixed", inset: 0, zIndex: 200, overflowY: "auto" }}>
           <OffersModal darkMode={darkMode} onClose={() => setShowOffers(false)} user={user}
-            onOpenChat={(offer) => { setShowOffers(false); setActiveChat(offer); }} />
+            onOpenChat={(offer) => { setShowOffers(false); setActiveChat(offer); }} showToast={showToast} />
         </div>
       )}
 

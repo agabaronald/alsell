@@ -3,7 +3,7 @@ import { G } from '../constants';
 import { fmt, authHeaders, timeAgo } from '../utils';
 import { API } from '../constants';
 
-export default function OffersModal({ darkMode, onClose, user, onOpenChat }) {
+export default function OffersModal({ darkMode, onClose, user, onOpenChat, showToast }) {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const bg = darkMode ? G.surface : "#fff";
@@ -29,7 +29,7 @@ export default function OffersModal({ darkMode, onClose, user, onOpenChat }) {
       const res = await fetch(`${API}/offers/${id}/${action}`, { method: "PATCH", headers: authHeaders(), body });
       const data = await res.json();
       if (res.ok) await loadOffers();
-      else alert(data.error || "Action failed");
+      else showToast(data.error || "Action failed");
     } catch (err) { console.error(err); }
   };
 

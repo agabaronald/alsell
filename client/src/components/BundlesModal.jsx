@@ -31,7 +31,7 @@ export default function BundlesModal({ darkMode, onClose, user, onAuthRequired, 
   };
 
   const handleCreate = async () => {
-    if (form.listing_ids.length < 2) { alert("Select at least 2 listings"); return; }
+    if (form.listing_ids.length < 2) { showToast("Select at least 2 listings"); return; }
     setCreating(true);
     try {
       const res = await fetch(`${API}/bundles`, {
@@ -44,8 +44,8 @@ export default function BundlesModal({ darkMode, onClose, user, onAuthRequired, 
         setShowCreate(false);
         setForm({ title: "", description: "", bundle_price: "", listing_ids: [] });
         showToast("Bundle created!");
-      } else alert(data.error || "Failed to create bundle");
-    } catch { alert("Network error"); }
+      } else showToast(data.error || "Failed to create bundle");
+    } catch { showToast("Network error"); }
     finally { setCreating(false); }
   };
 
