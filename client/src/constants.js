@@ -29,10 +29,11 @@ export const CATEGORIES = [
   { id: "fashion", label: "Fashion", icon: "◎" },
   { id: "cars", label: "Cars", icon: "◉" },
   { id: "property", label: "Property", icon: "⬡" },
-  { id: "home", label: "Home", icon: "⬢" },
+  { id: "home", label: "Home & Furniture", icon: "⬢" },
   { id: "hobbies", label: "Hobbies", icon: "◆" },
   { id: "books", label: "Books", icon: "▣" },
-  { id: "sports", label: "Sports", icon: "◐" },
+  { id: "sports", label: "Sports & Outdoors", icon: "◐" },
+  { id: "other", label: "Other", icon: "▪" },
 ];
 
 export const TRENDING = [
